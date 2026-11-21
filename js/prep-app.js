@@ -11,6 +11,7 @@
   const TRACKS = window.PREP_TRACKS;
   const ROLES = window.PREP_ROLES;
   const Fx = window.FSFx;
+  const I = window.FSIcon;
 
   const STORE_KEY = 'futurespin:prep:v1';
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -46,31 +47,31 @@
   // ---------- answer frameworks ----------
   const FRAMEWORKS = {
     concept: {
-      name: 'Define, how, example, limit', hint: 'For “explain X” questions',
+      icon: 'brain', name: 'Define · How · Example · Limit', hint: 'For "explain X" questions',
       steps: ['<b>Define</b> it in one plain sentence.', '<b>How</b> it works: the one key mechanism.', '<b>Example</b> from a real project or product.', '<b>Limit</b>: when it fails, or the trade-off you would watch.']
     },
     design: {
-      name: 'Clarify, design, evaluate, ship', hint: 'For system design rounds',
+      icon: 'blocks', name: 'Clarify · Design · Evaluate · Ship', hint: 'For system design rounds',
       steps: ['<b>Clarify</b> users, success metric, scale, latency, data and risk.', '<b>Design</b> the data flow, model choice, retrieval or tools, and where humans step in.', '<b>Evaluate</b>: evals, guardrails and how it fails.', '<b>Ship</b>: cost, phased rollout, monitoring and feedback.']
     },
     bluf: {
-      name: 'Bottom line first', hint: 'For customer and executive answers',
+      icon: 'target', name: 'Bottom line first', hint: 'For customer and executive answers',
       steps: ['<b>Bottom line</b>: your answer or recommendation, first.', '<b>Why</b>: two or three reasons in business terms.', '<b>Risk</b>: what could go wrong and how you will handle it.', '<b>Next step</b>: the decision or action you need.']
     },
     thinkaloud: {
-      name: 'Think out loud', hint: 'For coding and decomposition rounds',
+      icon: 'message-circle', name: 'Think out loud', hint: 'For coding and decomposition rounds',
       steps: ['<b>Restate</b> the problem and ask clarifying questions.', '<b>Outline</b> your approach before writing code.', '<b>Narrate</b> trade-offs as you go.', '<b>Test</b> with an example and an edge case, then say what you would improve.']
     },
     star: {
-      name: 'STAR', hint: 'For “tell me about a time…” questions',
+      icon: 'star', name: 'STAR', hint: 'For "tell me about a time…" questions',
       steps: ['<b>Situation</b>: one or two lines of context.', '<b>Task</b>: what you were responsible for.', '<b>Action</b>: what <i>you</i> did. Spend most of your time here.', '<b>Result</b>: the outcome, with a number, and what you learned.']
     }
   };
   const frameworkFor = topic => FRAMEWORKS[TRACKS[topic.track].framework] || FRAMEWORKS.concept;
 
   const KINDS = {
-    article: 'Article', video: 'Video', docs: 'Docs', guide: 'Guide',
-    course: 'Course', book: 'Book', podcast: 'Podcast', 'case-study': 'Case study'
+    article: ['file-text', 'Article'], video: ['circle-play', 'Video'], docs: ['book', 'Docs'], guide: ['compass', 'Guide'],
+    course: ['graduation-cap', 'Course'], book: ['library', 'Book'], podcast: ['headphones', 'Podcast'], 'case-study': ['puzzle', 'Case study']
   };
   const isMedium = (source, url) => /medium/i.test(source) || /(^|\.)medium\.com$/i.test(hostOf(url));
   function hostOf(url) { try { return new URL(url).hostname; } catch (e) { return ''; } }
@@ -128,8 +129,6 @@
   }
 
   // ---------- header & status ----------
-  const SOUND_ON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
-  const SOUND_OFF = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
   function renderHeader() {
     const streak = B.currentStreak(state, today());
     const streakEl = $('#streak');
@@ -142,7 +141,7 @@
     $('#readyFill').style.width = Math.round(r.ready / r.total * 100) + '%';
     $('#readyPill').title = `${r.ready} of ${r.total} topics marked interview-ready`;
     const sb = $('#soundBtn');
-    sb.innerHTML = state.settings.sound ? SOUND_ON : SOUND_OFF;
+    sb.innerHTML = I(state.settings.sound ? 'volume-2' : 'volume-x');
     sb.setAttribute('aria-pressed', String(state.settings.sound));
     renderNudge(streak, r);
   }
@@ -150,7 +149,7 @@
   function renderNudge(streak, r) {
     const doneToday = state.streak.lastDay === today();
     $('#nudge').textContent = doneToday
-      ? `You practised today, so your ${streak}-day streak is safe.`
+      ? `You practised today. Your ${streak}-day streak is safe.`
       : streak > 0
         ? `Answer one question out loud today to keep your ${streak}-day streak.`
         : r.ready
@@ -184,9 +183,10 @@
   // ---------- prep list (rail) ----------
   function pickRow(p) {
     const t = byId.get(p.id);
+    const track = TRACKS[t.track];
     return `<li class="pick${p.ready ? ' learned' : ''}">
       <label class="check" title="I can talk about this"><input type="checkbox" data-ready="${esc(t.id)}" ${p.ready ? 'checked' : ''} aria-label="Interview-ready: ${esc(t.title)}"><span></span></label>
-      <button type="button" class="pick-title" data-open="${esc(t.id)}" title="${esc(t.title)}">${esc(t.title)}</button>
+      <button type="button" class="pick-title" data-open="${esc(t.id)}" title="${esc(t.title)}">${I(track.icon)} ${esc(t.title)}</button>
       <button type="button" class="pick-x" data-remove="${esc(t.id)}" aria-label="Remove ${esc(t.title)} from your prep list" title="Remove (puts it back in the machine)">✕</button>
     </li>`;
   }
@@ -207,7 +207,7 @@
     $('#trackBars').innerHTML = Object.keys(TRACKS).map(k => {
       const row = r.byTrack[k];
       const pct = row.total ? Math.round(row.ready / row.total * 100) : 0;
-      return `<li style="--c:${TRACKS[k].color}"><span class="tb-label">${esc(TRACKS[k].short)}</span>
+      return `<li style="--c:${TRACKS[k].color}"><span class="tb-label">${I(TRACKS[k].icon)} ${esc(TRACKS[k].short)}</span>
         <span class="tb-meter" aria-hidden="true"><i style="--p:${pct / 100}"></i></span><span class="tb-num">${row.ready}/${row.total}</span></li>`;
     }).join('');
     renderSyllabusMarks();
@@ -224,52 +224,55 @@
       const fw = frameworkFor(topic);
       const picked = P.isPicked(state, topic.id);
       const entry = state.picks.find(p => p.id === topic.id);
+      const flames = [1, 2, 3, 4, 5].map(i => `<span class="${i <= topic.priority ? '' : 'off'}">${I('flame')}</span>`).join('');
       const roleTags = topic.roles === 'both'
-        ? `<span class="tag">${esc(ROLES.ai.short)}</span><span class="tag">${esc(ROLES.fde.short)}</span>`
-        : `<span class="tag">${esc(ROLES[topic.roles].short)}</span>`;
+        ? `<span class="tag">${I(ROLES.ai.icon)} AI Engineer</span><span class="tag">${I(ROLES.fde.icon)} FDE</span>`
+        : `<span class="tag">${I(ROLES[topic.roles].icon)} ${esc(topic.roles === 'fde' ? 'FDE' : ROLES.ai.label)}</span>`;
       const res = resources(topic);
       const resList = res.length
         ? `<ul class="res-list">${res.map(([kind, title, source, url]) => {
+            const k = KINDS[kind] || KINDS.article;
             const medium = isMedium(source, url) ? '<span class="res-badge">Medium</span>' : '';
             return `<li><a class="res" href="${esc(safeUrl(url))}" target="_blank" rel="noopener">
-              <span class="res-body"><b>${esc(title)}</b><small><span>${esc(source)}</span><span>${KINDS[kind] || KINDS.article}</span></small></span>${medium}
+              <span class="res-kind" aria-hidden="true">${I(k[0])}</span>
+              <span class="res-body"><b>${esc(title)}</b><small>${esc(source)} · ${k[1]}</small></span>${medium}
             </a></li>`;
           }).join('')}</ul>`
         : '<p class="res-none">Hand-picked links are on the way. Use the searches below for now.</p>';
       card.style.setProperty('--c', track.color);
       card.innerHTML = `
         <div class="card-meta">
-          <span class="tag area">${esc(track.label)}</span>
+          <span class="tag"><span class="dot" aria-hidden="true"></span>${esc(track.label)}</span>
           ${roleTags}
-          <span class="heat">Priority <b>${topic.priority}</b> of 5</span>
+          <span class="heat${topic.priority >= 5 ? ' max' : ''}" title="Priority ${topic.priority} of 5" aria-label="Priority ${topic.priority} of 5">${flames}</span>
           ${entry && entry.ready ? '<span class="eta"><b>✓ Interview-ready</b></span>' : ''}
         </div>
         <h2 class="card-title">${esc(topic.title)}</h2>
         <p class="why">${esc(topic.gist)}</p>
         <div class="prep-grid">
           <div>
-            <h3 class="minor-head">They ask</h3>
+            <h3 class="eyebrow">They ask</h3>
             <ul class="asks">${topic.asks.map(a => `<li>${esc(a)}</li>`).join('')}</ul>
           </div>
           <div>
-            <h3 class="minor-head">A strong answer covers</h3>
+            <h3 class="eyebrow">A strong answer covers</h3>
             <ul class="covers">${topic.cover.map(c => `<li>${esc(c)}</li>`).join('')}</ul>
           </div>
         </div>
         <div class="challenge">
           <div>
-            <h3 class="minor-head">Answer out loud in 60 seconds</h3>
+            <h3 class="eyebrow">${I('mic')} Answer out loud · 60 seconds</h3>
             <p class="q">“${esc(questionFor(topic))}”</p>
-            <small>Shape it with <b>${esc(fw.name)}</b>.${topic.asks.length > 1 ? ' <button type="button" class="text-btn inline" data-act="next-q">Another question</button>' : ''}</small>
+            <small>Shape it with ${I(fw.icon)} <b>${esc(fw.name)}</b>.${topic.asks.length > 1 ? ' <button type="button" class="text-btn inline" data-act="next-q">Another question ' + I('refresh-cw') + '</button>' : ''}</small>
           </div>
-          <button type="button" class="btn secondary" data-act="explain">Start 60s</button>
+          <button type="button" class="btn secondary" data-act="explain">${I('timer')} Start 60s</button>
         </div>
         <div class="prep-notes">
-          <div class="note"><h3 class="minor-head">Practice</h3><p>${esc(topic.practice)}</p></div>
-          <div class="note flag"><h3 class="minor-head">Red flag</h3><p>${esc(topic.flag)}</p></div>
+          <div class="note"><h3 class="eyebrow">${I('dumbbell')} Practice</h3><p>${esc(topic.practice)}</p></div>
+          <div class="note flag"><h3 class="eyebrow">${I('flag')} Red flag</h3><p>${esc(topic.flag)}</p></div>
         </div>
         <div class="study">
-          <h3 class="minor-head">Learn from</h3>
+          <h3 class="eyebrow">${I('library')} Learn from</h3>
           ${resList}
           <p class="resources">Find more:
             ${searchLinks(topic).map(([label, href]) => `<a href="${href}" target="_blank" rel="noopener">${label}</a>`).join('')}
@@ -280,8 +283,8 @@
             ? (entry.ready
               ? '<button type="button" class="btn done" disabled>✓ Interview-ready</button>'
               : '<button type="button" class="btn primary" data-act="ready">✓ I can talk about this</button>')
-            : '<button type="button" class="btn primary" data-act="pick">Add to prep list</button>'}
-          <button type="button" class="btn secondary" data-act="spin">Spin again</button>
+            : `<button type="button" class="btn primary" data-act="pick">${I('pin')} Add to prep list</button>`}
+          <button type="button" class="btn secondary" data-act="spin">${I('refresh-cw')} Spin again</button>
           <span class="quiet">
             ${picked
               ? '<button type="button" class="text-btn" data-act="unpick">Put back</button>'
@@ -296,21 +299,21 @@
 
   function renderEmptyCard(reason) {
     const card = $('#card');
-    card.style.setProperty('--c', 'var(--m-violet)');
+    card.style.setProperty('--c', '#8b6cff');
     const skipped = state.skipped.length;
     const bringBack = skipped ? `<button type="button" class="btn secondary" data-act="restore">Bring back ${skipped} skipped</button>` : '';
     if (reason === 'filtered') {
-      card.innerHTML = `<div class="card-empty">
+      card.innerHTML = `<div class="card-empty"><span class="big">${I('inbox')}</span>
         <h2>Nothing left for these filters</h2>
         <p>Every matching topic is on your prep list or skipped. Widen the filters to keep spinning.</p>
         <div class="actions"><button type="button" class="btn primary" data-act="reset-filters">Reset filters</button>${bringBack}</div></div>`;
     } else if (reason === 'cleared') {
-      card.innerHTML = `<div class="card-empty">
+      card.innerHTML = `<div class="card-empty"><span class="big">${I('flag')}</span>
         <h2>The machine is empty</h2>
         <p>Every topic is on your prep list or skipped. Work through your list and tick off what you can talk about.</p>
         <div class="actions">${bringBack}</div></div>`;
     } else {
-      card.innerHTML = `<div class="card-empty">
+      card.innerHTML = `<div class="card-empty"><span class="big">${I('target')}</span>
         <h2>Your next interview question is one pull away</h2>
         <p>${LIB.length} topics across ${Object.keys(TRACKS).length} tracks, from LLM basics to customer discovery. Each comes with real interview questions and links to learn from.</p>
         <div class="steps">
@@ -329,7 +332,7 @@
 
   function reelItem(t) {
     const tr = TRACKS[t.track];
-    return `<div class="reel-item" style="--c:${tr.color}"><span class="reel-tag">${esc(tr.short)}</span><span class="reel-text">${esc(t.title)}</span></div>`;
+    return `<div class="reel-item" style="--c:${tr.color}"><span class="reel-emoji">${I(tr.icon)}</span><span class="reel-text">${esc(t.title)}</span></div>`;
   }
   function setReel(items) {
     strip.getAnimations().forEach(a => a.cancel());
@@ -499,11 +502,9 @@
   lever.addEventListener('pointercancel', release);
   lever.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); pullLever(); } });
 
-  // Idle invitation: wiggle the lever a few times before the first spin (never with reduced motion).
-  let wiggles = 0;
+  // Idle invitation: wiggle the lever until the first spin (never with reduced motion).
   setInterval(async () => {
-    if (reduceMotion || wiggles >= 3 || ui.hasSpun || ui.spinning || L.busy || drag || document.hidden) return;
-    wiggles++;
+    if (reduceMotion || ui.hasSpun || ui.spinning || L.busy || drag || document.hidden) return;
     L.busy = true;
     await animateLever(0.16, 200, ease.out);
     await animateLever(0, 600, ease.elastic);
@@ -517,7 +518,7 @@
     P.pick(state, t, today());
     save();
     Fx.sound.pick();
-    announce(`${t.title} is on your prep list.`);
+    toast(`“${t.title}” is on your prep list.`);
     if (ui.current && ui.current.id === t.id) renderCard(ui.current);
     renderPicks();
     renderStatus();
@@ -527,7 +528,7 @@
   function doUnpick(id) {
     if (!P.unpick(state, id)) return;
     save();
-    announce('Back in the machine. It can land again.');
+    toast('Back in the machine. It can land again.');
     if (ui.current && ui.current.id === id) renderCard(ui.current);
     renderPicks();
     renderStatus();
@@ -538,7 +539,7 @@
     if (!ui.current || ui.spinning) return;
     P.skip(state, ui.current.id);
     save();
-    toast('Skipped. Bring it back any time from an empty machine.');
+    toast('⏭ Skipped. Bring it back any time from an empty machine.');
     renderStatus();
     pullLever();
   }
@@ -553,7 +554,7 @@
     if (ready) {
       Fx.sound.learned();
       if (el) Fx.burstFrom(el, 45, 0.7);
-      announce(`Interview-ready: ${byId.get(id).title}`);
+      toast(`Interview-ready: ${byId.get(id).title}`);
     }
     renderPicks();
     renderStatus();
@@ -608,12 +609,12 @@
     timer.total = mode === 'explain' ? 60e3 : 15 * 60e3;
     const fw = frameworkFor(topic);
     const first = resources(topic)[0];
-    $('#timerKicker').textContent = mode === 'explain' ? '60-second answer' : '15-minute study sprint';
+    $('#timerKicker').innerHTML = mode === 'explain' ? `${I('mic')} 60-second answer` : `${I('headphones')} 15-minute study sprint`;
     $('#timerTitle').textContent = topic.title;
     $('#timerPrompt').textContent = mode === 'explain'
       ? `“${questionFor(topic)}” Answer out loud, and record yourself if you can.`
       : `Read ${first ? '“' + first[1] + '”' : 'one of the links'}, note the 3 points you would say, then answer: “${questionFor(topic)}”`;
-    $('#timerTrick').innerHTML = `<b>${esc(fw.name)}</b><ol>${fw.steps.map(s => `<li>${s}</li>`).join('')}</ol>`;
+    $('#timerTrick').innerHTML = `${I(fw.icon)} <b>${esc(fw.name)}</b><ol>${fw.steps.map(s => `<li>${s}</li>`).join('')}</ol>`;
     resetTimer();
     timerDialog.showModal();
   }
@@ -625,7 +626,7 @@
     timer.remaining = timer.total;
     timer.lastBeep = null;
     $('#ring').classList.remove('urgent', 'complete');
-    setTimerActions('<button class="btn primary" id="timerStart" type="button">Start</button><button class="btn secondary" id="timerReset" type="button">Reset</button>');
+    setTimerActions(`<button class="btn primary" id="timerStart" type="button">${I('play')} Start</button><button class="btn secondary" id="timerReset" type="button">${I('rotate-ccw')} Reset</button>`);
     drawTimer();
   }
 
@@ -640,7 +641,7 @@
     if (timer.running) { pauseTimer(); return; }
     timer.running = true;
     timer.endAt = Date.now() + timer.remaining;
-    $('#timerStart').textContent = 'Pause';
+    $('#timerStart').innerHTML = `${I('pause')} Pause`;
     Fx.sound.beep();
     timer.int = setInterval(() => {
       timer.remaining = Math.max(0, timer.endAt - Date.now());
@@ -651,7 +652,7 @@
     }, 200);
   }
 
-  function pauseTimer() { stopTimer(); $('#timerStart').textContent = 'Resume'; }
+  function pauseTimer() { stopTimer(); $('#timerStart').innerHTML = `${I('play')} Resume`; }
   function stopTimer() { timer.running = false; clearInterval(timer.int); timer.int = null; }
 
   function completeTimer() {
@@ -663,13 +664,13 @@
     Fx.sound.done();
     $('#ring').classList.remove('urgent');
     $('#ring').classList.add('complete');
-    $('#timerTime').textContent = 'Done';
+    $('#timerTime').innerHTML = I('party-popper');
     Fx.burstFrom($('#ring'), 120, 1.1);
     const entry = state.picks.find(p => p.id === timer.topic.id);
     setTimerActions(
       (entry && entry.ready ? '' : '<button class="btn primary" type="button" data-timer="ready">✓ I can talk about this</button>')
-      + '<button class="btn secondary" type="button" data-timer="next">Spin the next one</button>'
-      + '<button class="btn secondary" type="button" data-timer="again">Go again</button>'
+      + `<button class="btn secondary" type="button" data-timer="next">${I('refresh-cw')} Spin the next one</button>`
+      + `<button class="btn secondary" type="button" data-timer="again">${I('rotate-ccw')} Go again</button>`
     );
     celebrate(before);
   }
@@ -689,13 +690,13 @@
   timerDialog.addEventListener('close', stopTimer);
 
   // ---------- frameworks & syllabus ----------
-  const accordion = (name, hint, body) => `<details class="trick"><summary><span><b>${esc(name)}</b><small>${esc(hint)}</small></span></summary>${body}</details>`;
+  const accordion = (icon, name, hint, body, attrs) => `<details class="trick"${attrs || ''}><summary><span class="trick-icon">${I(icon)}</span><span><b>${esc(name)}</b><small>${esc(hint)}</small></span></summary>${body}</details>`;
 
   function renderFrameworks() {
     $('#frameworksGrid').innerHTML = Object.keys(FRAMEWORKS).map(k => {
       const f = FRAMEWORKS[k];
       const used = Object.keys(TRACKS).filter(t => TRACKS[t].framework === k).map(t => TRACKS[t].short).join(', ');
-      return accordion(f.name, f.hint + (used ? `, used in ${used.replace(/, ([^,]*)$/, ' and $1')}` : ''), `<ol>${f.steps.map(s => `<li>${s}</li>`).join('')}</ol>`);
+      return accordion(f.icon, f.name, f.hint + (used ? ` · ${used}` : ''), `<ol>${f.steps.map(s => `<li>${s}</li>`).join('')}</ol>`);
     }).join('');
   }
 
@@ -705,7 +706,7 @@
       const topics = LIB.filter(t => t.track === k);
       const body = `<ul class="syllabus">${topics.map(t => `<li><button type="button" class="syl-item" data-open="${esc(t.id)}">
         <span class="syl-mark" data-mark="${esc(t.id)}" aria-hidden="true"></span><span>${esc(t.title)}</span></button></li>`).join('')}</ul>`;
-      return accordion(tr.label, `${topics.length} topics`, body);
+      return accordion(tr.icon, tr.label, `${topics.length} topics`, body, ` style="--c:${tr.color}"`);
     }).join('');
     renderSyllabusMarks();
   }
@@ -713,7 +714,7 @@
   function renderSyllabusMarks() {
     document.querySelectorAll('[data-mark]').forEach(el => {
       const p = state.picks.find(x => x.id === el.dataset.mark);
-      el.textContent = p && p.ready ? '✓' : '';
+      el.innerHTML = p ? (p.ready ? '✓' : I('pin')) : '';
       el.classList.toggle('on', !!p);
       el.classList.toggle('ready', !!(p && p.ready));
     });
@@ -815,6 +816,7 @@
   window.addEventListener('resize', layoutLever);
 
   // ---------- boot ----------
+  window.FSIconHydrate();
   $('#marquee').innerHTML = Array.from({ length: 22 }, (_, i) => `<span class="bulb" style="--i:${i}"></span>`).join('');
   renderFrameworks();
   renderSyllabus();

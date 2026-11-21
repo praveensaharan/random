@@ -11,6 +11,8 @@
   const DEPTHS = window.FS_DEPTHS;
   const Radar = window.FSRadar;
   const Fx = window.FSFx;
+  const I = window.FSIcon;
+  const LEVEL_ICONS = { 'Explorer': 'compass', 'Early Adopter': 'sprout', 'Trendsetter': 'rocket', 'Visionary': 'telescope', 'Futurist': 'orbit' };
 
   const STORE_KEY = 'futurespin:v1';
   const params = new URLSearchParams(location.search);
@@ -49,20 +51,20 @@
   // ---------- content helpers ----------
   const TRICKS = {
     feynman: {
-      name: 'Feynman technique', hint: 'Teach it to a 12-year-old',
-      steps: ['<b>Pick</b> the concept and write its name down.', '<b>Explain</b> it in plain words, as if to a kid.', '<b>Spot the gaps</b>: where did you stall or use jargon?', '<b>Simplify</b> with an analogy, then explain again.']
+      icon: 'baby', name: 'Feynman technique', hint: 'Teach it to a 12-year-old',
+      steps: ['<b>Pick</b> the concept and write its name down.', '<b>Explain</b> it in plain words, as if to a kid.', '<b>Spot the gaps</b> — where did you stall or use jargon?', '<b>Simplify</b> with an analogy, then explain again.']
     },
     www: {
-      name: 'What, why, how, where', hint: 'The 4-part tech explainer',
-      steps: ['<b>What</b> is it, in one sentence?', '<b>Why now</b>: what changed to make it hot?', '<b>How</b> does it work? Name the key mechanism.', '<b>Where</b> would it fit in your projects or clients?']
+      icon: 'compass', name: 'What · Why · How · Where', hint: 'The 4-part tech explainer',
+      steps: ['<b>What</b> is it, in one sentence?', '<b>Why now</b> — what changed to make it hot?', '<b>How</b> does it work — the key mechanism?', '<b>Where</b> would it fit in your projects or clients?']
     },
     radar: {
-      name: 'Adopt, trial, assess, hold', hint: 'Place it on your tech radar',
-      steps: ['<b>Adopt</b>: proven, use it now.', '<b>Trial</b>: worth a real pilot project.', '<b>Assess</b>: explore and keep watching.', '<b>Hold</b>: not yet; say what would change your mind.']
+      icon: 'radar', name: 'Adopt · Trial · Assess · Hold', hint: 'Place it on your tech radar',
+      steps: ['<b>Adopt</b> — proven, use it now.', '<b>Trial</b> — worth a real pilot project.', '<b>Assess</b> — explore and keep watching.', '<b>Hold</b> — not yet; say what would change your mind.']
     },
     oto: {
-      name: '1-3-1', hint: 'Headline, proof, action',
-      steps: ['<b>1 line</b>: your headline about the topic.', '<b>3 points</b>: facts or examples that back it up.', '<b>1 action</b>: what you or your team should do next.']
+      icon: 'target', name: '1 · 3 · 1', hint: 'Headline, proof, action',
+      steps: ['<b>1 line</b> — your headline about the topic.', '<b>3 points</b> — facts or examples that back it up.', '<b>1 action</b> — what you or your team should do next.']
     }
   };
 
@@ -80,9 +82,9 @@
   // Speaking templates (Matt Abrahams, "Think Faster, Talk Smarter"). [brackets] are blanks; [topic] is auto-filled on copy.
   const SCRIPTS = {
     video: {
-      name: 'Full video script', hint: 'Hook, what, so what, now what',
+      icon: 'clapperboard', name: 'Full video script', hint: 'Hook → what → so what → now what',
       parts: [
-        ['Hook (first 10 seconds)', 'Have you ever [problem your viewer faces]? In the next [X] minutes you\'ll learn how to [result].'],
+        ['Hook · first 10 sec', 'Have you ever [problem your viewer faces]? In the next [X] minutes you\'ll learn how to [result].'],
         ['Intro', 'Hi, I\'m [name]. I [your experience with this topic]. Today I\'ll cover [point 1], [point 2] and [point 3].'],
         ['What', 'So, what is [topic]? Simply put, it\'s [one-line definition]. Think of it like [everyday comparison].'],
         ['So what', 'Why should you care? Because [problem it solves]. Without it, [what goes wrong]. With it, [benefit]. For example, [real story from your work].'],
@@ -92,7 +94,7 @@
       ]
     },
     swn: {
-      name: 'What, so what, now what', hint: 'The 60-second answer',
+      icon: 'zap', name: 'What · So what · Now what', hint: 'The 60-second answer',
       parts: [
         ['What', '[topic] is [one-line definition].'],
         ['So what', 'It matters because [problem it solves or benefit].'],
@@ -100,7 +102,7 @@
       ]
     },
     psb: {
-      name: 'Problem, solution, benefit', hint: 'Pitch a tool or a fix',
+      icon: 'wrench', name: 'Problem · Solution · Benefit', hint: 'Pitch a tool or a fix',
       parts: [
         ['Problem', 'A lot of teams struggle with [problem]. It causes [pain].'],
         ['Solution', 'The fix is [topic]. It works like this: [step 1], [step 2], [step 3].'],
@@ -108,11 +110,11 @@
       ]
     },
     ppf: {
-      name: 'Past, present, future', hint: 'Tell the story of how it changed',
+      icon: 'hourglass', name: 'Past · Present · Future', hint: 'Tell the story of how it changed',
       parts: [
         ['Past', 'Before [topic], [how things used to be done].'],
         ['Present', 'Now, [what changed] because [reason].'],
-        ['Future', 'Next, [where this is heading], so [what you should do].']
+        ['Future', 'Next, [where this is heading] — so [what you should do].']
       ]
     }
   };
@@ -120,10 +122,10 @@
   function searchLinks(topic) {
     const q = encodeURIComponent(topic.title);
     return [
-      ['▶', 'YouTube', `https://www.youtube.com/results?search_query=${encodeURIComponent(topic.title + ' explained')}`],
-      ['🔎', 'Web', `https://www.google.com/search?q=${q}`],
-      ['🧪', 'Papers', `https://scholar.google.com/scholar?q=${q}`],
-      ['💻', 'GitHub', `https://github.com/search?q=${q}&type=repositories`]
+      ['circle-play', 'YouTube', `https://www.youtube.com/results?search_query=${encodeURIComponent(topic.title + ' explained')}`],
+      ['', 'Web', `https://www.google.com/search?q=${q}`],
+      ['', 'Papers', `https://scholar.google.com/scholar?q=${q}`],
+      ['code-xml', 'GitHub', `https://github.com/search?q=${q}&type=repositories`]
     ];
   }
 
@@ -175,18 +177,16 @@
       bump($('#level'));
     }
     if (after.streak > before.streak) {
-      toast(after.streak === 1 ? 'Streak started. Come back tomorrow to grow it!' : `${after.streak}-day streak! Keep it alive tomorrow.`);
+      toast(after.streak === 1 ? 'Streak started — come back tomorrow to grow it!' : `${after.streak}-day streak! Keep it alive tomorrow.`);
       bump($('#streak'));
     }
     if (before.learned < B.BATCH_GOAL && after.learned >= B.BATCH_GOAL) {
       Fx.burst(innerWidth / 2, innerHeight * 0.4, 200, 1.4);
-      toast("Batch goal crushed. You're ahead of the curve!", { big: true, ms: 4500 });
+      toast("Batch goal crushed — you're ahead of the curve!", { big: true, ms: 4500 });
     }
   }
 
   // ---------- header ----------
-  const SOUND_ON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
-  const SOUND_OFF = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
   function renderHeader() {
     const streak = B.currentStreak(state, today());
     const streakEl = $('#streak');
@@ -195,12 +195,13 @@
     streakEl.classList.toggle('cold', streak === 0);
     const xp = B.xpOf(state);
     const lvl = B.levelFor(xp);
+    $('#levelEmoji').innerHTML = I(LEVEL_ICONS[lvl.name] || 'compass');
     $('#levelName').textContent = lvl.name;
     $('#xpFill').style.width = Math.round(lvl.progress * 100) + '%';
     $('#xpText').textContent = lvl.next ? `${xp} / ${lvl.next.min} XP` : `${xp} XP`;
-    $('#level').title = lvl.next ? `${xp} XP, ${lvl.next.min - xp} more to reach ${lvl.next.name}` : `${xp} XP, max level`;
+    $('#level').title = lvl.next ? `${xp} XP — ${lvl.next.min - xp} more to reach ${lvl.next.name}` : `${xp} XP — max level`;
     const sb = $('#soundBtn');
-    sb.innerHTML = state.settings.sound ? SOUND_ON : SOUND_OFF;
+    sb.innerHTML = I(state.settings.sound ? 'volume-2' : 'volume-x');
     sb.setAttribute('aria-pressed', String(state.settings.sound));
     renderNudge(streak);
   }
@@ -209,7 +210,7 @@
   function renderNudge(streak) {
     const doneToday = state.streak.lastDay === today();
     $('#nudge').textContent = doneToday
-      ? `You learned today, so your ${streak}-day streak is safe. See you tomorrow!`
+      ? `You learned today — your ${streak}-day streak is safe. See you tomorrow!`
       : streak > 0
         ? `Learn one topic today to keep your ${streak}-day streak alive.`
         : 'Start a streak today: learn one topic or finish a 60-second challenge.';
@@ -242,7 +243,7 @@
     $('#goalNote').textContent = crushed
       ? 'Goal crushed! Every extra topic now is pure edge.'
       : p.picked > p.learned
-        ? `${p.picked - p.learned} pick${p.picked - p.learned > 1 ? 's' : ''} waiting. Tick them off as you learn.`
+        ? `${p.picked - p.learned} pick${p.picked - p.learned > 1 ? 's' : ''} waiting — tick them off as you learn.`
         : 'Learn 3 topics this batch to stay ahead of the curve.';
     renderPoolInfo();
   }
@@ -281,15 +282,17 @@
     const moved = r.moved ? ` Your ${r.moved} pick${r.moved > 1 ? 's' : ''} moved to the Vault.` : '';
     setTimeout(() => {
       Fx.burst(innerWidth / 2, innerHeight * 0.3, 140, 1.2);
-      toast(`Batch #${r.index + 1} just dropped: ${state.batch.ids.length} fresh hot topics!${moved}`, { big: true, ms: 5500 });
+      toast(`🆕 Batch #${r.index + 1} just dropped — ${state.batch.ids.length} fresh hot topics!${moved}`, { big: true, ms: 5500 });
     }, 500);
   }
 
   // ---------- picks tray ----------
   function pickRow(p, inVault) {
+    const area = AREAS[p.area] || AREAS.ai;
+    const icon = I(p.source === 'radar' ? 'radio' : area.icon);
     const title = p.source === 'radar'
-      ? `<a class="pick-title" href="${esc(p.url)}" target="_blank" rel="noopener" title="${esc(p.title)}">${esc(p.title)}</a>`
-      : `<button type="button" class="pick-title" data-open="${esc(p.id)}" title="${esc(p.title)}">${esc(p.title)}</button>`;
+      ? `<a class="pick-title" href="${esc(p.url)}" target="_blank" rel="noopener" title="${esc(p.title)}">${icon} ${esc(p.title)}</a>`
+      : `<button type="button" class="pick-title" data-open="${esc(p.id)}" title="${esc(p.title)}">${icon} ${esc(p.title)}</button>`;
     const remove = inVault ? '' : `<button type="button" class="pick-x" data-remove="${esc(p.id)}" aria-label="Remove ${esc(p.title)} from picks" title="Remove (puts it back in the machine)">✕</button>`;
     return `<li class="pick${p.learned ? ' learned' : ''}">
       <label class="check" title="Mark as learned"><input type="checkbox" data-learn="${esc(p.id)}" ${p.learned ? 'checked' : ''} aria-label="Learned: ${esc(p.title)}"><span></span></label>
@@ -301,7 +304,7 @@
     const list = $('#picksList');
     list.innerHTML = state.picks.length
       ? state.picks.map(p => pickRow(p, false)).join('')
-      : '<li class="picks-empty">No picks yet. Pull the lever and pick what excites you.</li>';
+      : '<li class="picks-empty">No picks yet — pull the lever and pick what excites you.</li>';
     $('#picksCount').textContent = state.picks.length;
     $('#mbPicksCount').textContent = state.picks.length;
     $('#vaultCount').textContent = state.vault.length;
@@ -319,33 +322,34 @@
       const ch = challengeFor(topic);
       const trick = TRICKS[ch.trick];
       const picked = B.isPicked(state, topic.id);
+      const flames = [1, 2, 3, 4, 5].map(i => `<span class="${i <= topic.heat ? '' : 'off'}">${I('flame')}</span>`).join('');
       card.style.setProperty('--c', area.color);
       card.innerHTML = `
         <div class="card-meta">
-          <span class="tag area">${esc(area.label)}</span>
-          <span class="tag">${esc(depth.label)}</span>
-          <span class="heat">Hype <b>${topic.heat}</b> of 5</span>
+          <span class="tag"><span class="dot" aria-hidden="true"></span>${esc(area.label)}</span>
+          <span class="tag">${I(depth.icon)} ${esc(depth.label)}</span>
+          <span class="heat${topic.heat >= 5 ? ' max' : ''}" title="Hype ${topic.heat} of 5" aria-label="Hype ${topic.heat} of 5">${flames}</span>
           <span class="eta">Mainstream: <b>${esc(topic.eta)}</b></span>
         </div>
         <h2 class="card-title">${esc(topic.title)}</h2>
         <p class="why">${esc(topic.why)}</p>
         <div class="learn">
-          <h3 class="minor-head">Learn these 3 things</h3>
+          <h3 class="eyebrow">Learn these 3 things</h3>
           <ol class="learn-list">${topic.learn.map(l => `<li>${esc(l)}</li>`).join('')}</ol>
         </div>
         <div class="challenge">
           <div>
-            <h3 class="minor-head">60-second challenge</h3>
+            <h3 class="eyebrow">${I('mic')} 60-second challenge</h3>
             <p>${esc(ch.text(topic.title))}</p>
             <small>Tip: use the ${esc(trick.name)} trick.</small>
           </div>
-          <button type="button" class="btn secondary" data-act="explain">Start 60s</button>
+          <button type="button" class="btn secondary" data-act="explain">${I('timer')} Start 60s</button>
         </div>
         <div class="actions">
           ${picked
             ? '<button type="button" class="btn done" disabled>✓ In My Picks</button>'
             : '<button type="button" class="btn primary" data-act="pick">Pick it</button>'}
-          <button type="button" class="btn secondary" data-act="spin">Spin again</button>
+          <button type="button" class="btn secondary" data-act="spin">${I('refresh-cw')} Spin again</button>
           <span class="quiet">
             ${picked
               ? '<button type="button" class="text-btn" data-act="unpick">Put back</button>'
@@ -363,21 +367,21 @@
 
   function renderEmptyCard(reason) {
     const card = $('#card');
-    card.style.setProperty('--c', 'var(--m-violet)');
+    card.style.setProperty('--c', '#8b6cff');
     const skipped = state.batch.skipped.length;
     const bringBack = skipped ? `<button type="button" class="btn secondary" data-act="restore">Bring back ${skipped} skipped</button>` : '';
     if (reason === 'filtered') {
-      card.innerHTML = `<div class="card-empty">
+      card.innerHTML = `<div class="card-empty"><span class="big">${I('inbox')}</span>
         <h2>Nothing left for these filters</h2>
         <p>You've worked through every matching topic in this batch. Widen the filters or come back when the next batch drops.</p>
         <div class="actions"><button type="button" class="btn primary" data-act="reset-filters">Reset filters</button>${bringBack}</div></div>`;
     } else if (reason === 'cleared') {
-      card.innerHTML = `<div class="card-empty">
+      card.innerHTML = `<div class="card-empty"><span class="big">${I('flag')}</span>
         <h2>You cleared this batch!</h2>
-        <p>Every topic is picked or skipped. Fresh hot topics drop when the countdown hits zero, so check what's trending meanwhile.</p>
+        <p>Every topic is picked or skipped. Fresh hot topics drop when the countdown hits zero — check what's trending meanwhile.</p>
         <div class="actions">${bringBack}</div></div>`;
     } else {
-      card.innerHTML = `<div class="card-empty">
+      card.innerHTML = `<div class="card-empty"><span class="big">${I('rocket')}</span>
         <h2>Your next edge is one pull away</h2>
         <p>This batch has ${state.batch.ids.length} hot tech topics, weighted toward AI. Pull the lever and see what you land.</p>
         <div class="steps">
@@ -396,7 +400,7 @@
 
   function reelItem(t) {
     const a = AREAS[t.area];
-    return `<div class="reel-item" style="--c:${a.color}"><span class="reel-tag">${esc(a.short)}</span><span class="reel-text">${esc(t.title)}</span></div>`;
+    return `<div class="reel-item" style="--c:${a.color}"><span class="reel-emoji">${I(a.icon)}</span><span class="reel-text">${esc(t.title)}</span></div>`;
   }
   function setReel(items) {
     strip.getAnimations().forEach(a => a.cancel());
@@ -537,7 +541,7 @@
 
   async function pullLever() {
     if (ui.spinning || L.busy) return;
-    if (reduceMotion || getComputedStyle(lever).display === 'none') { spin(); return; }
+    if (getComputedStyle(lever).display === 'none') { spin(); return; }
     L.busy = true;
     Fx.sound.lever();
     await animateLever(1, 200, ease.in);
@@ -576,11 +580,9 @@
     if (e.key === 'Enter') { e.preventDefault(); pullLever(); }
   });
 
-  // Idle invitation: wiggle the lever a few times before the first spin (never with reduced motion).
-  let wiggles = 0;
+  // Idle invitation: wiggle the lever until the first spin.
   setInterval(async () => {
-    if (reduceMotion || wiggles >= 3 || ui.hasSpun || ui.spinning || L.busy || drag || document.hidden) return;
-    wiggles++;
+    if (ui.hasSpun || ui.spinning || L.busy || drag || document.hidden) return;
     L.busy = true;
     await animateLever(0.16, 200, ease.out);
     await animateLever(0, 600, ease.elastic);
@@ -595,7 +597,9 @@
     B.pick(state, topic, today());
     save();
     Fx.sound.pick();
-    announce(`Added ${topic.title} to My Picks.`);
+    toast(topic.source === 'radar'
+      ? `Added “${topic.title}” to My Picks`
+      : `Picked! “${topic.title}” is out of the machine now.`);
     if (!item || item === ui.current) renderCard(ui.current);
     renderPicks();
     renderBatch();
@@ -607,7 +611,7 @@
   function doUnpick(id) {
     if (!B.unpick(state, id)) return;
     save();
-    announce('Back in the machine. It can land again.');
+    toast('Back in the machine — it can land again.');
     if (ui.current && ui.current.id === id) renderCard(ui.current);
     renderPicks();
     renderBatch();
@@ -619,7 +623,7 @@
     if (!ui.current || ui.spinning) return;
     B.skip(state, ui.current.id);
     save();
-    toast('Skipped for this batch');
+    toast('⏭ Skipped for this batch');
     renderBatch();
     pullLever();
   }
@@ -640,13 +644,13 @@
   }
 
   async function doShare(topic) {
-    const text = `${topic.title}\n${topic.why}\nLearn: ${topic.learn.join(', ')}\nFound on FutureSpin`;
+    const text = `${topic.title}\n${topic.why}\nLearn: ${topic.learn.join(' · ')}\n— found on FutureSpin`;
     try {
       if (navigator.share && matchMedia('(pointer: coarse)').matches) { await navigator.share({ title: topic.title, text }); return; }
       await navigator.clipboard.writeText(text);
-      toast('Copied to clipboard. Paste it to your team!');
+      toast('Copied to clipboard — paste it to your team!');
     } catch (e) {
-      toast('Could not copy automatically. Select the card text instead.');
+      toast('Could not copy automatically — select the card text instead.');
     }
   }
 
@@ -661,12 +665,12 @@
     timer.total = mode === 'explain' ? 60e3 : 15 * 60e3;
     const ch = challengeFor(topic);
     const trick = TRICKS[mode === 'explain' ? ch.trick : 'www'];
-    $('#timerKicker').textContent = mode === 'explain' ? '60-second challenge' : '15-minute focus sprint';
+    $('#timerKicker').innerHTML = mode === 'explain' ? `${I('mic')} 60-second challenge` : `${I('headphones')} 15-minute focus sprint`;
     $('#timerTitle').textContent = topic.title;
     $('#timerPrompt').textContent = mode === 'explain'
-      ? ch.text(topic.title) + ' Talk out loud, and record yourself if you can.'
+      ? ch.text(topic.title) + ' Talk out loud — record yourself if you can.'
       : `Deep-learn it: ${topic.learn.join(', ')}. Use the search links, then try to explain it back.`;
-    $('#timerTrick').innerHTML = `<b>${esc(trick.name)}</b><ol>${trick.steps.map(s => `<li>${s}</li>`).join('')}</ol>`;
+    $('#timerTrick').innerHTML = `${I(trick.icon)} <b>${esc(trick.name)}</b><ol>${trick.steps.map(s => `<li>${s}</li>`).join('')}</ol>`;
     resetTimer();
     timerDialog.showModal();
   }
@@ -678,7 +682,7 @@
     timer.remaining = timer.total;
     timer.lastBeep = null;
     $('#ring').classList.remove('urgent', 'complete');
-    setTimerActions('<button class="btn primary" id="timerStart" type="button">Start</button><button class="btn secondary" id="timerReset" type="button">Reset</button>');
+    setTimerActions(`<button class="btn primary" id="timerStart" type="button">${I('play')} Start</button><button class="btn secondary" id="timerReset" type="button">${I('rotate-ccw')} Reset</button>`);
     drawTimer();
   }
 
@@ -693,7 +697,7 @@
     if (timer.running) { pauseTimer(); return; }
     timer.running = true;
     timer.endAt = Date.now() + timer.remaining;
-    $('#timerStart').textContent = 'Pause';
+    $('#timerStart').innerHTML = `${I('pause')} Pause`;
     Fx.sound.beep();
     timer.int = setInterval(() => {
       timer.remaining = Math.max(0, timer.endAt - Date.now());
@@ -706,7 +710,7 @@
 
   function pauseTimer() {
     stopTimer();
-    $('#timerStart').textContent = 'Resume';
+    $('#timerStart').innerHTML = `${I('play')} Resume`;
   }
 
   function stopTimer() {
@@ -723,13 +727,13 @@
     Fx.sound.done();
     $('#ring').classList.remove('urgent');
     $('#ring').classList.add('complete');
-    $('#timerTime').textContent = 'Done';
+    $('#timerTime').innerHTML = I('party-popper');
     Fx.burstFrom($('#ring'), 120, 1.1);
     const picked = B.isPicked(state, timer.topic.id);
     setTimerActions(
       (picked ? '' : '<button class="btn primary" type="button" data-timer="pick">Pick this topic</button>')
-      + '<button class="btn secondary" type="button" data-timer="next">Spin the next one</button>'
-      + '<button class="btn secondary" type="button" data-timer="again">Go again</button>'
+      + `<button class="btn secondary" type="button" data-timer="next">${I('refresh-cw')} Spin the next one</button>`
+      + `<button class="btn secondary" type="button" data-timer="again">${I('rotate-ccw')} Go again</button>`
     );
     celebrate(before);
   }
@@ -763,7 +767,7 @@
     const groups = {};
     v.forEach(x => { (groups[x.batch] = groups[x.batch] || []).push(x); });
     $('#vaultList').innerHTML = Object.keys(groups).map(Number).sort((a, b) => b - a).map(b =>
-      `<div class="vault-batch"><h4>Batch #${b + 1}, ${groups[b].length} topic${groups[b].length > 1 ? 's' : ''}</h4><ul>${groups[b].map(x => pickRow(x, true)).join('')}</ul></div>`
+      `<div class="vault-batch"><h4>Batch #${b + 1} · ${groups[b].length} topic${groups[b].length > 1 ? 's' : ''}</h4><ul>${groups[b].map(x => pickRow(x, true)).join('')}</ul></div>`
     ).join('');
   }
 
@@ -792,9 +796,10 @@
 
   function radarRow(it) {
     const a = AREAS[it.area];
-    return `<li class="radar-row">
+    return `<li class="radar-row" style="--c:${a.color}">
+      <span class="dot" aria-hidden="true"></span>
       <a href="${esc(it.url)}" target="_blank" rel="noopener" title="${esc(it.title)}">${esc(it.title)}</a>
-      <span class="radar-meta"><span>${esc(a.short)}</span><span>▲ ${it.points}</span></span>
+      <span class="radar-meta">${esc(a.short)} · ▲ ${it.points}</span>
       <button type="button" class="btn secondary" data-radar="${esc(it.id)}" aria-label="Add “${esc(it.title)}” to My Picks">+ Pick</button>
     </li>`;
   }
@@ -825,7 +830,7 @@
   }
 
   // ---------- learning tricks section ----------
-  const accordion = (t, body) => `<details class="trick"><summary><span><b>${esc(t.name)}</b><small>${esc(t.hint)}</small></span></summary>${body}</details>`;
+  const accordion = (t, body) => `<details class="trick"><summary><span class="trick-icon">${I(t.icon)}</span><span><b>${esc(t.name)}</b><small>${esc(t.hint)}</small></span></summary>${body}</details>`;
 
   function renderTricks() {
     $('#tricksGrid').innerHTML = Object.keys(TRICKS).map(k => {
@@ -840,7 +845,7 @@
     $('#scriptsGrid').innerHTML = Object.keys(SCRIPTS).map(k => {
       const s = SCRIPTS[k];
       return accordion(s, `<div class="script">${s.parts.map(([label, line]) => `<p><b>${esc(label)}</b>${blanks(line)}</p>`).join('')}`
-        + `<button type="button" class="btn secondary" data-act="copy-script" data-script="${k}">Copy template</button></div>`);
+        + `<button type="button" class="btn secondary" data-act="copy-script" data-script="${k}">${I('copy')} Copy template</button></div>`);
     }).join('');
   }
 
@@ -851,7 +856,7 @@
     const text = s.parts.map(([label, line]) => `${label.toUpperCase()}\n${topic ? line.split('[topic]').join(topic) : line}`).join('\n\n');
     try {
       await navigator.clipboard.writeText(text);
-      toast(topic ? `Copied with “${topic}” filled in` : 'Copied. Fill in the [brackets].');
+      toast(topic ? `Copied with "${topic}" filled in` : 'Copied — fill in the [brackets]');
     } catch (e) {
       toast('Could not access the clipboard');
     }
@@ -965,6 +970,7 @@
     renderCard(ui.current);
   }
 
+  window.FSIconHydrate();
   $('#marquee').innerHTML = Array.from({ length: 22 }, (_, i) => `<span class="bulb" style="--i:${i}"></span>`).join('');
   renderTricks();
   renderScripts();
