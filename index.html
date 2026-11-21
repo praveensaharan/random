@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>FutureSpin — pull the lever, learn what's next in tech</title>
+  <title>FutureSpin: pull the lever, learn what's next in tech</title>
   <meta name="description" content="A tech-topic slot machine. Pull the lever to land on a hot, future-proof tech topic, pick it, and explain it in 60 seconds. Fresh batch every 3 days.">
   <meta name="theme-color" content="#ffffff">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎰</text></svg>">
@@ -18,17 +18,20 @@
       <span class="brand-mark" aria-hidden="true">🎰</span>
       <span class="brand-name">FutureSpin</span>
     </a>
+    <nav class="switch" aria-label="FutureSpin pages">
+      <a href="./" aria-current="page">Tech topics</a>
+      <a href="prep.html">Interview prep</a>
+    </nav>
     <div class="stats">
       <div class="pill-stat streak" id="streak" title="Daily streak — learn a topic or finish a timer each day">
-        <span aria-hidden="true">🔥</span><b id="streakCount">0</b><span class="pill-label">day streak</span>
+        <b id="streakCount">0</b><span class="pill-label">day streak</span>
       </div>
       <div class="pill-stat level" id="level" title="Earn XP by picking, learning and finishing timers">
-        <span id="levelEmoji" aria-hidden="true">🧭</span>
         <b id="levelName">Explorer</b>
         <span class="xpbar" aria-hidden="true"><i id="xpFill"></i></span>
         <small class="pill-label" id="xpText">0 XP</small>
       </div>
-      <button class="icon-btn" id="soundBtn" type="button" aria-pressed="true" title="Sound on/off">🔊</button>
+      <button class="icon-btn" id="soundBtn" type="button" aria-pressed="true" aria-label="Sound" title="Sound on/off"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
     </div>
   </header>
 
@@ -37,7 +40,7 @@
       <h1>What's next in tech?</h1>
       <p class="lede">Pull the lever, land on a topic that's about to boom, and learn it before everyone else.</p>
       <p class="status">
-        <span class="status-item"><span class="live-dot" aria-hidden="true"></span>Batch <b id="batchNo">#1</b></span>
+        <span class="status-item">Batch <b id="batchNo">#1</b></span>
         <span class="status-item" id="poolInfo">36 topics left</span>
         <span class="status-item">Next drop in <b class="mono" id="countdown">–</b></span>
       </p>
@@ -71,7 +74,7 @@
               <span>Depth</span>
               <select id="depthSelect"></select>
             </label>
-            <button class="spin-btn" id="spinBtn" type="button">🎰 Spin</button>
+            <button class="spin-btn" id="spinBtn" type="button">Spin</button>
           </div>
         </section>
 
@@ -91,7 +94,7 @@
             <p class="goal-note" id="goalNote">Learn 3 topics this batch to stay ahead of the curve.</p>
           </div>
           <ul class="picks" id="picksList"></ul>
-          <button class="btn secondary block" id="vaultBtn" type="button">📦 Knowledge Vault <span class="count" id="vaultCount">0</span></button>
+          <button class="btn secondary block" id="vaultBtn" type="button">Knowledge Vault <span class="count" id="vaultCount">0</span></button>
         </section>
       </aside>
     </div>
@@ -119,34 +122,34 @@
         <p>Recording an explainer video? Pick a template and fill in what you know. Based on Matt Abrahams' Stanford talk
           <a href="https://www.youtube.com/watch?v=x6TsR3y5Qfg" target="_blank" rel="noopener">Think Faster, Talk Smarter</a>.</p>
       </div>
-      <h3 class="eyebrow">6 habits before you hit record</h3>
+      <h3 class="minor-head">6 habits before you hit record</h3>
       <ul class="speak-tips">
-        <li><b>😮‍💨 Calm</b>Nervous? Say "I'm excited" instead. Same feeling, better energy.</li>
-        <li><b>🔓 Unlock</b>Aim for connection, not perfection. Small slips are fine, so keep going.</li>
-        <li><b>💬 Redefine</b>It's a conversation with one viewer, not a performance.</li>
-        <li><b>👂 Listen</b>Say what your viewer needs to hear, not everything you know.</li>
-        <li><b>🧱 Structure</b>Don't wing it. Pick one of the templates below.</li>
-        <li><b>🎯 Focus</b>Keep it short and clear. Pause instead of saying "umm".</li>
+        <li><b>Calm</b>Nervous? Say "I'm excited" instead. Same feeling, better energy.</li>
+        <li><b>Unlock</b>Aim for connection, not perfection. Small slips are fine, so keep going.</li>
+        <li><b>Redefine</b>It's a conversation with one viewer, not a performance.</li>
+        <li><b>Listen</b>Say what your viewer needs to hear, not everything you know.</li>
+        <li><b>Structure</b>Don't wing it. Pick one of the templates below.</li>
+        <li><b>Focus</b>Keep it short and clear. Pause instead of saying "umm".</li>
       </ul>
-      <h3 class="eyebrow">Fill-in templates · copying fills in your current topic</h3>
+      <h3 class="minor-head">Fill-in templates (copying one fills in your current topic)</h3>
       <div class="tricks" id="scriptsGrid"></div>
     </section>
   </main>
 
   <footer class="footer">
-    <p>Topics rotate every 3 days · Progress is saved in this browser · Trending stories from the public Hacker News Search API</p>
+    <p>Topics rotate every 3 days and progress is saved in this browser. Trending stories come from the public Hacker News Search API.</p>
     <button class="text-btn" id="resetBtn" type="button">Reset my progress</button>
   </footer>
 
   <nav class="mobile-bar" id="mobileBar" aria-label="Quick actions">
-    <button class="btn secondary" id="mbPicks" type="button">📌 Picks <span class="count" id="mbPicksCount">0</span></button>
-    <button class="spin-btn" id="mbSpin" type="button">🎰 Spin</button>
+    <button class="btn secondary" id="mbPicks" type="button">Picks <span class="count" id="mbPicksCount">0</span></button>
+    <button class="spin-btn" id="mbSpin" type="button">Spin</button>
   </nav>
 
   <dialog class="dialog" id="timerDialog" aria-labelledby="timerTitle">
     <button class="dialog-close" type="button" data-close aria-label="Close">✕</button>
-    <p class="eyebrow" id="timerKicker">🎤 60-second challenge</p>
     <h3 id="timerTitle">Topic</h3>
+    <p class="dialog-sub" id="timerKicker">60-second challenge</p>
     <p class="timer-prompt" id="timerPrompt"></p>
     <div class="ring" id="ring">
       <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -161,12 +164,12 @@
 
   <dialog class="dialog" id="vaultDialog" aria-labelledby="vaultTitle">
     <button class="dialog-close" type="button" data-close aria-label="Close">✕</button>
-    <p class="eyebrow">📦 Your learning history</p>
     <h3 id="vaultTitle">Knowledge Vault</h3>
+    <p class="dialog-sub">Your learning history, by batch.</p>
     <div class="vault-stats" id="vaultStats"></div>
     <div class="vault-list" id="vaultList"></div>
     <div class="dialog-actions">
-      <button class="btn secondary" id="vaultCopy" type="button">📋 Copy as Markdown</button>
+      <button class="btn secondary" id="vaultCopy" type="button">Copy as Markdown</button>
     </div>
   </dialog>
 
