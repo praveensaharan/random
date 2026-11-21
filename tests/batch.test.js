@@ -315,6 +315,8 @@
   });
 
   // ---------- runner ----------
+  // Other suites (e.g. prep.test.js, loaded before this file) register themselves on window.FSTestSuites.
+  (window.FSTestSuites || []).forEach(suite => suite.tests.forEach(t => tests.push({ name: suite.name + ': ' + t.name, fn: t.fn })));
   const lines = [];
   let failed = 0;
   tests.forEach(t => {

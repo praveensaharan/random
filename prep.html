@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FutureSpin Interview Prep: AI Engineer and FDE topics</title>
+  <meta name="description" content="Pull the lever to land on an interview topic for AI Engineer and Forward Deployed Engineer roles. Study hand-picked articles, then answer out loud in 60 seconds.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="prep">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="FutureSpin home">
+      <span class="brand-mark" aria-hidden="true">🎰</span>
+      <span class="brand-name">FutureSpin</span>
+    </a>
+    <nav class="switch" aria-label="FutureSpin pages">
+      <a href="./">Tech topics</a>
+      <a href="prep.html" aria-current="page">Interview prep</a>
+    </nav>
+    <div class="stats">
+      <div class="pill-stat streak" id="streak" title="Daily streak: mark a topic ready or finish a timer each day">
+        <b id="streakCount">0</b><span class="pill-label">day streak</span>
+      </div>
+      <div class="pill-stat level" id="readyPill" title="Topics you can talk about confidently">
+        <b id="readyCount">0</b>
+        <span class="xpbar" aria-hidden="true"><i id="readyFill"></i></span>
+        <small class="pill-label" id="readyText">of 0 ready</small>
+      </div>
+      <button class="icon-btn" id="soundBtn" type="button" aria-pressed="true" aria-label="Sound" title="Sound on/off"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <h1>Ready for the AI interview?</h1>
+      <p class="lede">Pull the lever to land on a topic interviewers ask about for AI Engineer and Forward Deployed Engineer roles. Read the best links, then answer out loud in 60 seconds.</p>
+      <p class="status">
+        <span class="status-item"><b id="topicTotal">0</b> topics in <b id="trackTotal">0</b> tracks</span>
+        <span class="status-item" id="poolInfo">0 left to spin</span>
+        <span class="status-item"><b id="linkTotal">0</b> learning links</span>
+      </p>
+      <p class="nudge" id="nudge"></p>
+    </section>
+
+    <div class="layout">
+      <div class="main-col">
+        <section class="machine" id="machine" aria-label="Interview topic machine">
+          <div class="marquee" id="marquee" aria-hidden="true"></div>
+          <div class="sign" aria-hidden="true">INTERVIEW<span>SPIN</span></div>
+          <div class="cabinet">
+            <div class="reel-window" id="reelWindow">
+              <div class="reel-strip" id="reelStrip"></div>
+              <div class="payline" aria-hidden="true"></div>
+            </div>
+            <div class="lever" id="lever" role="button" tabindex="0" aria-label="Pull the lever to spin" title="Pull me, or press Space">
+              <div class="lever-hint" id="leverHint">Pull me!</div>
+              <div class="lever-slot"></div>
+              <div class="lever-base"></div>
+              <div class="lever-rod" id="leverRod"></div>
+              <div class="lever-knob" id="leverKnob"></div>
+            </div>
+          </div>
+          <div class="controls">
+            <label class="select">
+              <span>Track</span>
+              <select id="trackSelect"></select>
+            </label>
+            <label class="select">
+              <span>Role</span>
+              <select id="roleSelect"></select>
+            </label>
+            <button class="spin-btn" id="spinBtn" type="button">Spin</button>
+          </div>
+        </section>
+
+        <noscript><p class="card">This page needs JavaScript to spin and show topics. Turn it on and reload.</p></noscript>
+        <p class="sr-only" id="announcer" aria-live="polite"></p>
+        <article class="card" id="card"></article>
+      </div>
+
+      <aside class="rail" aria-label="Your prep list">
+        <section class="panel" id="picksPanel">
+          <header class="panel-head">
+            <h2>My prep list</h2>
+            <span class="count" id="picksCount">0</span>
+          </header>
+          <div class="goal" id="goal">
+            <div class="goal-head"><span>Interview-ready</span><b id="goalText">0 / 0</b></div>
+            <div class="meter"><i id="goalFill"></i></div>
+            <ul class="track-bars" id="trackBars"></ul>
+          </div>
+          <ul class="picks" id="picksList"></ul>
+          <button class="btn secondary block" id="copyPlanBtn" type="button">Copy study plan</button>
+        </section>
+      </aside>
+    </div>
+
+    <section class="section" aria-labelledby="fwTitle">
+      <div class="section-head">
+        <h2 id="fwTitle">Answer frameworks</h2>
+        <p>Every card suggests one of these. Pick the right shape and your answer sounds prepared, not memorised.</p>
+      </div>
+      <div class="tricks" id="frameworksGrid"></div>
+    </section>
+
+    <section class="section" aria-labelledby="syllabusTitle">
+      <div class="section-head">
+        <h2 id="syllabusTitle">The full syllabus</h2>
+        <p>Every topic in the machine, by track. Open any one directly when you want to study it now.</p>
+      </div>
+      <div class="tricks" id="syllabusGrid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Progress is saved in this browser, and links open the original articles and videos. Recording yourself? Use the <a href="./#speak">Talk smarter templates</a>.</p>
+    <button class="text-btn" id="resetBtn" type="button">Reset my progress</button>
+  </footer>
+
+  <nav class="mobile-bar" id="mobileBar" aria-label="Quick actions">
+    <button class="btn secondary" id="mbPicks" type="button">Prep list <span class="count" id="mbPicksCount">0</span></button>
+    <button class="spin-btn" id="mbSpin" type="button">Spin</button>
+  </nav>
+
+  <dialog class="dialog" id="timerDialog" aria-labelledby="timerTitle">
+    <button class="dialog-close" type="button" data-close aria-label="Close">✕</button>
+    <h3 id="timerTitle">Topic</h3>
+    <p class="dialog-sub" id="timerKicker">60-second answer</p>
+    <p class="timer-prompt" id="timerPrompt"></p>
+    <div class="ring" id="ring">
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <circle class="ring-bg" cx="60" cy="60" r="52"/>
+        <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"/>
+      </svg>
+      <div class="ring-time" id="timerTime" role="timer">1:00</div>
+    </div>
+    <div class="timer-trick" id="timerTrick"></div>
+    <div class="dialog-actions" id="timerActions"></div>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <script src="js/prep-topics.js"></script>
+  <script src="js/batch.js"></script>
+  <script src="js/prep.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/prep-app.js"></script>
+</body>
+</html>
